@@ -1,0 +1,96 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String     @id @default(cuid())
+  email             String     @unique
+  googleId          String?    @unique
+  name              String?
+  picture           String?
+  wallet            Wallet?
+  apiKeys           ApiKey[]
+  sentTransfers     Transfer[] @relation("sender")
+  receivedTransfers Transfer[] @relation("recipient")
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+
+  @@index([email])
+  @@index([googleId])
+}
+
+model Wallet {
+  id           String        @id @default(cuid())
+  userId       String        @unique
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  balance      Float         @default(0)
+  walletNumber String        @unique @default(cuid())
+  transactions Transaction[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@index([userId])
+  @@index([walletNumber])
+}
+
+model Transaction {
+  id          String   @id @default(cuid())
+  walletId    String
+  wallet      Wallet   @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  type        String // "deposit", "transfer", "withdrawal"
+  amount      Float
+  status      String   @default("pending") // "pending", "success", "failed"
+  description String?
+  reference   String?  @unique
+  paystackRef String?  @unique
+  metadata    Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([walletId])
+  @@index([reference])
+  @@index([paystackRef])
+  @@index([createdAt])
+}
+
+model ApiKey {
+  id             String    @id @default(cuid())
+  userId         String
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name           String
+  key            String    @unique
+  permissions    Json //String[] // ["deposit", "transfer", "read"]
+  expiresAt      DateTime
+  revokedAt      DateTime?
+  rolledOverAt   DateTime?
+  rolledOverFrom String? // Reference to the old key that was rolled over
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([key])
+  @@index([expiresAt])
+}
+
+model Transfer {
+  id          String   @id @default(cuid())
+  senderId    String
+  sender      User     @relation("sender", fields: [senderId], references: [id], onDelete: Cascade)
+  recipientId String
+  recipient   User     @relation("recipient", fields: [recipientId], references: [id], onDelete: Cascade)
+  amount      Float
+  status      String   @default("success") // "success", "failed", "pending"
+  reference   String   @unique @default(cuid())
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([senderId])
+  @@index([recipientId])
+  @@index([reference])
+}
