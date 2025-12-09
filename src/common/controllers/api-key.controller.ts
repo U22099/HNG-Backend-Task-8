@@ -98,7 +98,7 @@ export class ApiKeyController {
         {
           id: 'key_123abc',
           name: 'wallet-service',
-          key: 'sk_live_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6',
+          key: 'sk_live_anboena....',
           permissions: ['deposit', 'transfer', 'read'],
           expires_at: '2025-01-01T12:00:00Z',
           revoked_at: null,
@@ -108,7 +108,7 @@ export class ApiKeyController {
         {
           id: 'key_456def',
           name: 'reporting-service',
-          key: 'sk_live_x1y2z3a4b5c6d7e8f9g0h1i2j3k4l5m6',
+          key: 'sk_live_zibaib....',
           permissions: ['read'],
           expires_at: '2025-02-15T08:30:00Z',
           revoked_at: null,
@@ -118,7 +118,7 @@ export class ApiKeyController {
         {
           id: 'key_789ghi',
           name: 'old-service',
-          key: 'sk_live_m1n2o3p4q5r6s7t8u9v0w1x2y3z4a5b6',
+          key: 'sk_live_inebo....',
           permissions: ['deposit', 'transfer'],
           expires_at: '2024-12-20T12:00:00Z',
           revoked_at: '2024-12-25T09:15:00Z',
