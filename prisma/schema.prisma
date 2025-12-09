@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -64,7 +64,7 @@ model ApiKey {
   user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   name           String
   key            String    @unique
-  permissions    Json //String[] // ["deposit", "transfer", "read"]
+  permissions    String[] // ["deposit", "transfer", "read"]
   expiresAt      DateTime
   revokedAt      DateTime?
   rolledOverAt   DateTime?

@@ -14,19 +14,29 @@ export class JwtAuthGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const authHeader = request.headers.authorization;
 
-    // If no auth header, let the next guard handle it (API Key)
-    if (!authHeader) {
-      return true;
-    }
+    const authOnlyEndpoint = request.url.startsWith('/keys');
 
-    const token = authHeader.replace('Bearer ', '');
+    if (!authHeader && request.headers['x-api-key'] && !authOnlyEndpoint) {
+      return true;
+    } else if(!authHeader && authOnlyEndpoint) 
+       throw new UnauthorizedException('Missing authentication: Bearer JWT required') 
+      else if (!authHeader) throw new UnauthorizedException('Missing authentication: Bearer JWT or x-api-key header required');
+
+    const token = authHeader.replace('Bearer ', '').trim();
+
+    if (!token) {
+      throw new UnauthorizedException('No JWT token provided');
+    }
 
     try {
       const payload = this.jwtService.verify(token);
-      request.user = payload;
+      request.user = { id: payload.sub, ...payload };
+      request.apiKeyPermissions = ['deposit', 'transfer', 'read'];
       return true;
     } catch (error) {
-      throw new UnauthorizedException('Invalid or expired JWT token');
+      throw new UnauthorizedException(
+        `Invalid or expired JWT token: ${error.message}`,
+      );
     }
   }
 }

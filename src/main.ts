@@ -5,9 +5,7 @@ import { AppModule } from './app.module';
 import { LoggerService } from './common/logger/logger.service';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
-    logger: new LoggerService(),
-  });
+  const app = await NestFactory.create(AppModule);
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -41,7 +39,7 @@ async function bootstrap() {
         name: 'x-api-key',
         description: 'API key for service-to-service access',
       },
-      'api-key',
+      'x-api-key',
     )
     .build();
 

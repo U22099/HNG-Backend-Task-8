@@ -12,9 +12,24 @@ export class AuthService {
   ) {}
 
   async validateOrCreateUser(profile: any) {
+    const select = {
+      id: true,
+      name: true,
+      email: true,
+      picture: true,
+      wallet: {
+        select: {
+          id: true,
+          userId: true,
+          balance: true,
+          walletNumber: true
+        }
+      }
+    }
     try {
       let user: any = await this.prisma.user.findUnique({
         where: { googleId: profile.id },
+        select
       });
 
       if (!user) {
@@ -28,20 +43,7 @@ export class AuthService {
               create: {},
             },
           },
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            picture: true,
-            wallet: {
-              select: {
-                id: true,
-                userId: true,
-                balance: true,
-                walletNumber: true
-              }
-            }
-          }
+          select
         });
         this.logger.log(`New user created: ${user.id}`);
       } else {
