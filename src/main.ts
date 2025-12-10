@@ -14,8 +14,6 @@ async function bootstrap() {
     }),
   );
 
-
-
   const config = new DocumentBuilder()
     .setTitle('Wallet Service API')
     .setDescription(

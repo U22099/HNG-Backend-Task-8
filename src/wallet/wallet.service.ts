@@ -101,9 +101,7 @@ export class WalletService {
       }
 
       if (transaction.paystackRef && transaction.status === 'pending') {
-        await this.paystackService.verifyTransaction(
-          transaction.paystackRef,
-        );
+        await this.paystackService.verifyTransaction(transaction.paystackRef);
       }
 
       this.logger.log(
@@ -180,7 +178,7 @@ export class WalletService {
     try {
       const senderWallet = await this.prisma.wallet.findUnique({
         where: { userId: senderId },
-        include: { user: { select: {name: true} } }
+        include: { user: { select: { name: true } } },
       });
 
       if (!senderWallet) {
@@ -189,7 +187,7 @@ export class WalletService {
 
       const recipientWallet = await this.prisma.wallet.findUnique({
         where: { walletNumber: transferDto.wallet_number },
-        include: { user: { select: {name: true} } }
+        include: { user: { select: { name: true } } },
       });
 
       if (!recipientWallet) {

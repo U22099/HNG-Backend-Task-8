@@ -22,14 +22,14 @@ export class AuthService {
           id: true,
           userId: true,
           balance: true,
-          walletNumber: true
-        }
-      }
-    }
+          walletNumber: true,
+        },
+      },
+    };
     try {
       let user: any = await this.prisma.user.findUnique({
         where: { googleId: profile.id },
-        select
+        select,
       });
 
       if (!user) {
@@ -43,7 +43,7 @@ export class AuthService {
               create: {},
             },
           },
-          select
+          select,
         });
         this.logger.log(`New user created: ${user.id}`);
       } else {

@@ -32,7 +32,7 @@ import {
 export class WalletController {
   constructor(private walletService: WalletService) {}
 
-  validateApiKeyPermission(permissions: string[], requiredPermission: string){
+  validateApiKeyPermission(permissions: string[], requiredPermission: string) {
     return permissions.includes(requiredPermission);
   }
 
@@ -54,9 +54,20 @@ export class WalletController {
     status: 401,
     description: 'Unauthorized - Invalid or missing JWT/API Key',
   })
-  async getBalance(@CurrentUser() user: any, @ApiKeyPermissions() permissions: string[]) {
+  @ApiResponse({
+    status: 401,
+    description:
+      'This api key does not have the necessary permissions to perform this action',
+  })
+  async getBalance(
+    @CurrentUser() user: any,
+    @ApiKeyPermissions() permissions: string[],
+  ) {
     const permitted = this.validateApiKeyPermission(permissions, 'read');
-    if(!permitted) throw new UnauthorizedException('This api key does not have the necessary permissions to  perform this action');
+    if (!permitted)
+      throw new UnauthorizedException(
+        'This api key does not have the necessary permissions to  perform this action',
+      );
     return this.walletService.getWalletBalance(user.id);
   }
 
@@ -64,11 +75,6 @@ export class WalletController {
   @UseGuards(JwtAuthGuard, ApiKeyGuard)
   @ApiBearerAuth('access-token')
   @ApiSecurity('x-api-key')
-  @ApiHeader({
-    name: 'x-api-key',
-    description: 'API Key with deposit permission',
-    required: false,
-  })
   @ApiOperation({
     summary: 'Initialize a deposit with Paystack',
     description:
@@ -103,13 +109,21 @@ export class WalletController {
   })
   @ApiResponse({ status: 400, description: 'Invalid amount' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({
+    status: 401,
+    description:
+      'This api key does not have the necessary permissions to  perform this action',
+  })
   async initializeDeposit(
     @CurrentUser() user: any,
     @ApiKeyPermissions() permissions: string[],
     @Body() depositDto: CreateDepositDto,
   ) {
     const permitted = this.validateApiKeyPermission(permissions, 'deposit');
-    if(!permitted) throw new UnauthorizedException('This api key does not have the necessary permissions to  perform this action');
+    if (!permitted)
+      throw new UnauthorizedException(
+        'This api key does not have the necessary permissions to  perform this action',
+      );
     return this.walletService.initializeDeposit(user.id, depositDto);
   }
 
@@ -119,8 +133,7 @@ export class WalletController {
   @UseGuards(JwtAuthGuard, ApiKeyGuard)
   @ApiOperation({
     summary: 'Verify deposit status (manual check only)',
-    description:
-      'Checks the status of a deposit.',
+    description: 'Checks the status of a deposit.',
   })
   @ApiResponse({
     status: 200,
@@ -137,22 +150,28 @@ export class WalletController {
     status: 404,
     description: 'Transaction not found',
   })
-  async verifyDepositStatus(@ApiKeyPermissions() permissions: string[], @Param('reference') reference: string) {
+  @ApiResponse({
+    status: 401,
+    description:
+      'This api key does not have the necessary permissions to  perform this action',
+  })
+  async verifyDepositStatus(
+    @ApiKeyPermissions() permissions: string[],
+    @Param('reference') reference: string,
+  ) {
     const permitted = this.validateApiKeyPermission(permissions, 'read');
-    if(!permitted) throw new UnauthorizedException('This api key does not have the necessary permissions to  perform this action');
+    if (!permitted)
+      throw new UnauthorizedException(
+        'This api key does not have the necessary permissions to  perform this action',
+      );
     return this.walletService.verifyDepositStatus(reference);
   }
 
   @Post('paystack/webhook')
   @ApiOperation({
-    summary: 'Paystack webhook endpoint (MANDATORY)',
+    summary: 'Paystack webhook endpoint',
     description:
       'Receives transaction updates from Paystack. Only this endpoint can credit wallets. Must validate Paystack signature.',
-  })
-  @ApiHeader({
-    name: 'x-paystack-signature',
-    description: 'Paystack HMAC signature for verification',
-    required: true,
   })
   @ApiBody({
     schema: {
@@ -189,7 +208,9 @@ export class WalletController {
     @Headers('x-paystack-signature') signature: string,
   ) {
     const body =
-      typeof request.body === 'string' ? JSON.parse(request.body) : request.body;
+      typeof request.body === 'string'
+        ? JSON.parse(request.body)
+        : request.body;
     return this.walletService.handlePaystackWebhook(body, signature);
   }
 
@@ -200,7 +221,7 @@ export class WalletController {
   @ApiOperation({
     summary: 'Transfer funds to another wallet',
     description:
-      'Transfer money from your wallet to another user\'s wallet. Checks balance and recipient validity.',
+      "Transfer money from your wallet to another user's wallet. Checks balance and recipient validity.",
   })
   @ApiBody({
     type: TransferDto,
@@ -245,13 +266,21 @@ export class WalletController {
     status: 401,
     description: 'Unauthorized',
   })
+  @ApiResponse({
+    status: 401,
+    description:
+      'This api key does not have the necessary permissions to  perform this action',
+  })
   async transfer(
     @CurrentUser() user: any,
     @ApiKeyPermissions() permissions: string[],
     @Body() transferDto: TransferDto,
   ) {
     const permitted = this.validateApiKeyPermission(permissions, 'transfer');
-    if(!permitted) throw new UnauthorizedException('This api key does not have the necessary permissions to  perform this action');
+    if (!permitted)
+      throw new UnauthorizedException(
+        'This api key does not have the necessary permissions to perform this action',
+      );
     return this.walletService.transferFunds(user.id, transferDto);
   }
 
@@ -262,7 +291,7 @@ export class WalletController {
   @ApiOperation({
     summary: 'Get transaction history',
     description:
-      'Retrieve all transactions for the authenticated user\'s wallet (deposits, transfers sent/received)',
+      "Retrieve all transactions for the authenticated user's wallet (deposits, transfers sent/received)",
   })
   @ApiResponse({
     status: 200,
@@ -303,9 +332,20 @@ export class WalletController {
     status: 401,
     description: 'Unauthorized',
   })
-  async getTransactions(@CurrentUser() user: any, @ApiKeyPermissions() permissions: string[]) {
+  @ApiResponse({
+    status: 401,
+    description:
+      'This api key does not have the necessary permissions to  perform this action',
+  })
+  async getTransactions(
+    @CurrentUser() user: any,
+    @ApiKeyPermissions() permissions: string[],
+  ) {
     const permitted = this.validateApiKeyPermission(permissions, 'read');
-    if(!permitted) throw new UnauthorizedException('This api key does not have the necessary permissions to  perform this action');
+    if (!permitted)
+      throw new UnauthorizedException(
+        'This api key does not have the necessary permissions to  perform this action',
+      );
     return this.walletService.getTransactionHistory(user.id);
   }
 }

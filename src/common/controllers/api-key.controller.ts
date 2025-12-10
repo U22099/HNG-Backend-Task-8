@@ -76,7 +76,8 @@ export class ApiKeyController {
   })
   @ApiResponse({
     status: 400,
-    description: 'Invalid request - Max 5 active keys, invalid expiry or permissions',
+    description:
+      'Invalid request - Max 5 active keys, invalid expiry or permissions',
   })
   async createApiKey(
     @CurrentUser() user: any,
@@ -153,10 +154,7 @@ export class ApiKeyController {
     status: 404,
     description: 'API key not found',
   })
-  async revokeApiKey(
-    @CurrentUser() user: any,
-    @Param('keyId') keyId: string,
-  ) {
+  async revokeApiKey(@CurrentUser() user: any, @Param('keyId') keyId: string) {
     return this.apiKeyService.revokeApiKey(user.id, keyId);
   }
 

@@ -189,7 +189,7 @@ export class ApiKeyService {
         throw new BadRequestException(
           'API key is still active. Only expired keys can be rolled over',
         );
-      } else if(oldKey.revokedAt){
+      } else if (oldKey.revokedAt) {
         throw new BadRequestException(
           'API key has been revoked. Only expired keys can be rolled over',
         );

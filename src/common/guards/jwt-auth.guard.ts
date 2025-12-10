@@ -18,9 +18,14 @@ export class JwtAuthGuard implements CanActivate {
 
     if (!authHeader && request.headers['x-api-key'] && !authOnlyEndpoint) {
       return true;
-    } else if(!authHeader && authOnlyEndpoint) 
-       throw new UnauthorizedException('Missing authentication: Bearer JWT required') 
-      else if (!authHeader) throw new UnauthorizedException('Missing authentication: Bearer JWT or x-api-key header required');
+    } else if (!authHeader && authOnlyEndpoint)
+      throw new UnauthorizedException(
+        'Missing authentication: Bearer JWT required',
+      );
+    else if (!authHeader)
+      throw new UnauthorizedException(
+        'Missing authentication: Bearer JWT or x-api-key header required',
+      );
 
     const token = authHeader.replace('Bearer ', '').trim();
 

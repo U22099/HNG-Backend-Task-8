@@ -13,7 +13,6 @@ export class ApiKeyGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    
 
     if (request.user && request.user.id) {
       return true;
