@@ -22,7 +22,6 @@ import {
   ApiBearerAuth,
   ApiOperation,
   ApiResponse,
-  ApiHeader,
   ApiBody,
   ApiSecurity,
 } from '@nestjs/swagger';
@@ -53,12 +52,8 @@ export class WalletController {
   })
   @ApiResponse({
     status: 401,
-    description: 'Unauthorized - Invalid or missing JWT/API Key',
-  })
-  @ApiResponse({
-    status: 401,
     description:
-      'This api key does not have the necessary permissions to perform this action',
+      'This api key does not have `read` permission necessary to perform this action',
   })
   async getBalance(
     @CurrentUser() user: any,
@@ -67,7 +62,7 @@ export class WalletController {
     const permitted = this.validateApiKeyPermission(permissions, 'read');
     if (!permitted)
       throw new UnauthorizedException(
-        'This api key does not have the necessary permissions to  perform this action',
+        'This api key does not have `read` permission necessary to perform this action',
       );
     return this.walletService.getWalletBalance(user.id);
   }
@@ -109,11 +104,10 @@ export class WalletController {
     },
   })
   @ApiResponse({ status: 400, description: 'Invalid amount' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({
     status: 401,
     description:
-      'This api key does not have the necessary permissions to  perform this action',
+      'This api key does not have `deposit` permission necessary to perform this action',
   })
   async initializeDeposit(
     @CurrentUser() user: any,
@@ -123,7 +117,7 @@ export class WalletController {
     const permitted = this.validateApiKeyPermission(permissions, 'deposit');
     if (!permitted)
       throw new UnauthorizedException(
-        'This api key does not have the necessary permissions to  perform this action',
+        'This api key does not have `deposit` permission necessary to perform this action',
       );
     return this.walletService.initializeDeposit(user.id, depositDto);
   }
@@ -154,7 +148,7 @@ export class WalletController {
   @ApiResponse({
     status: 401,
     description:
-      'This api key does not have the necessary permissions to  perform this action',
+      'This api key does not have `read` permission necessary to  perform this action',
   })
   async verifyDepositStatus(
     @ApiKeyPermissions() permissions: string[],
@@ -163,7 +157,7 @@ export class WalletController {
     const permitted = this.validateApiKeyPermission(permissions, 'read');
     if (!permitted)
       throw new UnauthorizedException(
-        'This api key does not have the necessary permissions to  perform this action',
+        'This api key does not have `read` permission necessary to perform this action',
       );
     return this.walletService.verifyDepositStatus(reference);
   }
@@ -265,12 +259,8 @@ export class WalletController {
   })
   @ApiResponse({
     status: 401,
-    description: 'Unauthorized',
-  })
-  @ApiResponse({
-    status: 401,
     description:
-      'This api key does not have the necessary permissions to  perform this action',
+      'This api key does not have `transfer` permission necessary to perform this action',
   })
   async transfer(
     @CurrentUser() user: any,
@@ -280,7 +270,7 @@ export class WalletController {
     const permitted = this.validateApiKeyPermission(permissions, 'transfer');
     if (!permitted)
       throw new UnauthorizedException(
-        'This api key does not have the necessary permissions to perform this action',
+        'This api key does not have `transfer` permission necessary to perform this action',
       );
     return this.walletService.transferFunds(user.id, transferDto);
   }
@@ -331,12 +321,8 @@ export class WalletController {
   })
   @ApiResponse({
     status: 401,
-    description: 'Unauthorized',
-  })
-  @ApiResponse({
-    status: 401,
     description:
-      'This api key does not have the necessary permissions to  perform this action',
+      'This api key does not have `read` permission necessary to perform this action',
   })
   async getTransactions(
     @CurrentUser() user: any,
@@ -345,7 +331,7 @@ export class WalletController {
     const permitted = this.validateApiKeyPermission(permissions, 'read');
     if (!permitted)
       throw new UnauthorizedException(
-        'This api key does not have the necessary permissions to  perform this action',
+        'This api key does not have `read` permission necessary to perform this action',
       );
     return this.walletService.getTransactionHistory(user.id);
   }
