@@ -47,6 +47,7 @@ export class WalletController {
     schema: {
       example: {
         balance: 15000,
+        wallet_number: "nbidofpope..."
       },
     },
   })
