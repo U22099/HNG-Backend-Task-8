@@ -7,7 +7,10 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 export class AuthController {
   @Get('google')
   @UseGuards(AuthGuard('google'))
-  @ApiOperation({ summary: 'Initiate Google OAuth sign-in' })
+  @ApiOperation({
+    summary: 'Initiate Google OAuth sign-in',
+    description: `🚨 **IMPORTANT:** Use this link to test the full redirect flow:\n\n[Launch Google Sign-In in a New Tab](${process.env.BASE_URL}/auth/google) (Opens in new tab)`,
+  })
   @ApiResponse({ status: 302, description: 'Redirects to Google OAuth' })
   googleAuth() {}
 
@@ -15,14 +18,14 @@ export class AuthController {
   @UseGuards(AuthGuard('google'))
   @ApiOperation({ summary: 'Google OAuth callback' })
   @ApiResponse({
-    status: 302,
-    description: 'Redirects with JWT token',
+    status: 200,
+    description: 'Validates and returns JwtToken',
     schema: {
       example: {
         user: {
           id: 'user...id...',
           name: 'Daniel',
-          email: 'u22099dandev@gmail.com',
+          email: 'ur_email@gmail.com',
           picture: 'https://lh3.googleusercontent.com...',
           wallet: {
             id: 'wallet...id...',
